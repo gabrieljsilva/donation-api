@@ -1,0 +1,14 @@
+### Find All Charities
+GRAPHQL {{graphql}}
+Authorization: {{accessToken}}
+
+query FindAllChatities {
+    findAllCharities {
+        id
+        name
+    }
+}
+
+{
+
+}

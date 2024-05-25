@@ -1,0 +1,18 @@
+### Make Login
+GRAPHQL {{graphql}}
+
+mutation MakeLogin($input: MakeLoginDto!) {
+    token: makeLogin(input: $input)
+}
+
+{
+  "input": {
+    "email": "gabriel.silva@email.com",
+    "password": "12345678"
+  }
+}
+
+> {%
+    const token = response.body.data.token
+    client.global.set('accessToken', `Bearer ${token}`);
+%}

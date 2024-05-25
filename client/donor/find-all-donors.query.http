@@ -1,0 +1,19 @@
+### Find All Donors
+GRAPHQL {{graphql}}
+Authorization: {{accessToken}}
+
+query FindAllDonors {
+    findAllDonors {
+        id
+        name
+        birthDate
+        access {
+            id
+            email
+        }
+    }
+}
+
+{
+
+}

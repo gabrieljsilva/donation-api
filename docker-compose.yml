@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  api_v1:
+    container_name: api_v1
+    image: node:20-alpine
+    command: "sh -c 'yarn && yarn start:dev'"
+    networks:
+      - default
+    ports:
+      - '3000:3000'
+    working_dir: '/source'
+    volumes:
+      - .:/source
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: 'postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_NAME}'
+    restart: unless-stopped
+
+  postgres:
+    container_name: postgres
+    image: 'postgres:15-alpine'
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    environment:
+      - POSTGRES_DB=${POSTGRES_NAME}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgres:/data/postgres
+    networks:
+      - default
+    restart: always
+
+networks:
+  default:
+
+volumes:
+  postgres:

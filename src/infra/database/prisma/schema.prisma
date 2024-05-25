@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Access {
+  id       Int     @id @default(autoincrement())
+  email    String
+  password String
+  donor    Donor[]
+
+  @@map("accesses")
+}
+
+model Donor {
+  id        Int      @id @default(autoincrement())
+  name      String
+  birthDate DateTime
+  accessId  Int
+
+  access   Access     @relation(fields: [accessId], references: [id])
+  Donation Donation[]
+
+  @@map("donors")
+}
+
+model Donation {
+  id        Int   @id @default(autoincrement())
+  amount    Float
+  donorId   Int
+  charityId Int
+
+  donor   Donor   @relation(fields: [donorId], references: [id])
+  charity Charity @relation(fields: [charityId], references: [id])
+
+  @@map("donations")
+}
+
+model Charity {
+  id       Int        @id @default(autoincrement())
+  name     String
+  Donation Donation[]
+
+  @@map("charities")
+}

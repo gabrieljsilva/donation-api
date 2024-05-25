@@ -1,0 +1,14 @@
+### Get Current User
+GRAPHQL {{graphql}}
+Authorization: {{accessToken}}
+
+query GetCurrentAccess {
+    getCurrentAccess {
+        id
+        email
+        donor {
+            id
+            name
+        }
+    }
+}

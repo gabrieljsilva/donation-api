@@ -1,0 +1,16 @@
+GRAPHQL {{graphql}}
+
+mutation CreateAccess($input: CreateAccessDto!) {
+    createAccess(input: $input){
+        id
+    }
+}
+
+{
+  "input": {
+    "name": "Gabriel Silva",
+    "birthDate": "2000-01-01",
+    "email": "gabriel.silva@email.com",
+    "password": "12345678"
+  }
+}

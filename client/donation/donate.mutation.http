@@ -1,0 +1,19 @@
+### Donate
+GRAPHQL {{graphql}}
+Authorization: {{accessToken}}
+
+mutation Donate($input: DonateDto!) {
+    donate(donateDto: $input){
+        id
+        amount
+        charityId
+        donorId
+    }
+}
+
+{
+  "input": {
+    "amount": 100,
+    "charityId": 2
+  }
+}

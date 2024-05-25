@@ -1,0 +1,16 @@
+### Create Charity
+GRAPHQL {{graphql}}
+Authorization: {{accessToken}}
+
+mutation CreateCharity($input: CreateCharityDto!) {
+    createCharity(createCharityDto: $input){
+        id
+        name
+    }
+}
+
+{
+  "input": {
+    "name": "Petz"
+  }
+}

@@ -1,0 +1,24 @@
+### Find All Donations
+GRAPHQL {{graphql}}
+Authorization: {{accessToken}}
+
+query FindAllDonations {
+    findAllDonations {
+        id
+        amount
+        charityId
+        donorId
+        charity {
+            id
+            name
+        }
+        donor {
+            id
+            name
+        }
+    }
+}
+
+{
+
+}

@@ -6,6 +6,10 @@ query FindAllChatities {
     findAllCharities {
         id
         name
+        donations {
+            id
+            amount
+        }
     }
 }
 

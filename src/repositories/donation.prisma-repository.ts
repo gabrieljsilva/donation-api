@@ -36,9 +36,14 @@ export class DonationPrismaRepository implements DonationRepository {
     return this.prisma.donation.findMany();
   }
 
-  async findAllByCharityId(charityId: number): Promise<Array<Donation>> {
+  @Dataloader('LOAD_DONATIONS_BY_CHARITY_ID')
+  async findAllByCharitiesIds(charitiesIds: Array<number>): Promise<Array<Donation>> {
     return this.prisma.donation.findMany({
-      where: { charityId },
+      where: {
+        charityId: {
+          in: charitiesIds,
+        },
+      },
     });
   }
 

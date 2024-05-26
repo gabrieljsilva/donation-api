@@ -7,7 +7,7 @@ mutation MakeLogin($input: MakeLoginDto!) {
 
 {
   "input": {
-    "email": "gabriel.silva@email.com",
+    "email": "john.doe@email.com",
     "password": "12345678"
   }
 }

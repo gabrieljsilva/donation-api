@@ -22,5 +22,6 @@ export class Donor implements Prisma.Donor {
   @LoadField(() => Access, (donor) => donor.accessId, (access) => access.id, 'LOAD_ACCESS_BY_ID')
   access?: Access;
 
+  @LoadField(() => [Donation], (donor) => donor.id, (donation) => donation.donorId, 'LOAD_DONATIONS_BY_DONOR_ID')
   donations?: Array<Donation>;
 }

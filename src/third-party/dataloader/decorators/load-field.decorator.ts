@@ -1,6 +1,5 @@
 import { Type } from '@nestjs/common';
-import { DataloaderChildFN, JoinPropertyFn } from '../types/dataloader.types';
-import { LoadFieldMetadata } from '../types';
+import { DataloaderChildFN, JoinPropertyFn, LoadFieldMetadata } from '../types';
 import { DataloaderMetadataContainer } from '../utils';
 
 export function LoadField<Child = any, Parent = any>(

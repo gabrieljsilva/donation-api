@@ -11,6 +11,6 @@ mutation CreateCharity($input: CreateCharityDto!) {
 
 {
   "input": {
-    "name": "Petz"
+    "name": "Criança Feliz"
   }
 }

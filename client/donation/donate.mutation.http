@@ -13,7 +13,7 @@ mutation Donate($input: DonateDto!) {
 
 {
   "input": {
-    "amount": 100,
-    "charityId": 2
+    "amount": 15,
+    "charityId": 3
   }
 }

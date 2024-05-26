@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CharityRepository, DonationRepository, DonorRepository } from '../domain/repositories';
 import { PrismaService } from '../infra/database';
-import { Donation } from '../entities/donation.entity';
+import { Donation } from '../entities';
+import { Dataloader, ResolveProvider } from '../third-party/dataloader/decorators';
 
 @Injectable()
+@ResolveProvider(DonationRepository)
 export class DonationPrismaRepository implements DonationRepository {
   constructor(
     private readonly prisma: PrismaService,
@@ -40,9 +42,14 @@ export class DonationPrismaRepository implements DonationRepository {
     });
   }
 
-  async findAllByDonorId(donorId: number): Promise<Array<Donation>> {
+  @Dataloader('LOAD_DONATIONS_BY_DONOR_ID')
+  async findAllByDonorIds(donorsIds: Array<number>): Promise<Array<Donation>> {
     return this.prisma.donation.findMany({
-      where: { donorId },
+      where: {
+        donorId: {
+          in: donorsIds,
+        },
+      },
     });
   }
 }

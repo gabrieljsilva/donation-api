@@ -8,9 +8,9 @@ mutation CreateAccess($input: CreateAccessDto!) {
 
 {
   "input": {
-    "name": "Gabriel Silva",
+    "name": "John Doe",
     "birthDate": "2000-01-01",
-    "email": "gabriel.silva@email.com",
+    "email": "john.doe@email.com",
     "password": "12345678"
   }
 }

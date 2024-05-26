@@ -7,9 +7,9 @@ query FindAllDonors {
         id
         name
         birthDate
-        access {
+        donations {
             id
-            email
+            amount
         }
     }
 }

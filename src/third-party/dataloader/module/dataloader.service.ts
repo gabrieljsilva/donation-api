@@ -2,8 +2,7 @@ import * as Dataloader from 'dataloader';
 import { Injectable, Scope } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 
-import { LoadFieldMetadata } from '../types';
-import { JoinProperty } from '../types/dataloader.types';
+import { LoadFieldMetadata, JoinProperty } from '../types';
 import { DataloaderMetadataContainer } from '../utils';
 import { RESOLVE_DATALOADER_PROVIDER } from '../constants';
 import { CacheMapProvider } from './dataloader.module';
@@ -40,7 +39,22 @@ export class DataloaderService {
       throw new Error(`cannot find provider: ${provider.provide.name}`);
     }
 
-    const loadEntitiesByKeys = async (keys: Array<JoinProperty>) => {
+    const loadOneToMany = async (keys: Array<JoinProperty>) => {
+      const entities = await repository[provider.field](keys);
+      const entitiesMappedByKey = new Map<JoinProperty, Array<any>>();
+
+      for (const entity of entities) {
+        const key = metadata.inverseJoinProperty(entity);
+        if (!entitiesMappedByKey.has(key)) {
+          entitiesMappedByKey.set(key, []);
+        }
+        entitiesMappedByKey.get(key).push(entity);
+      }
+
+      return keys.map((key) => entitiesMappedByKey.get(key) || []);
+    };
+
+    const loadOneToOne = async (keys: Array<JoinProperty>) => {
       const entities = await repository[provider.field](keys);
       const entitiesMappedByKey = new Map<JoinProperty, any>();
 
@@ -52,7 +66,9 @@ export class DataloaderService {
       return keys.map((key) => entitiesMappedByKey.get(key));
     };
 
-    const dataloader = new Dataloader<number | string, any>(loadEntitiesByKeys, {
+    const batchFunction = metadata.isArray ? loadOneToMany : loadOneToOne;
+
+    const dataloader = new Dataloader<number | string, any>(batchFunction, {
       cache: this.cacheMapProvider?.cache,
       cacheMap: this.cacheMapProvider?.getCacheMap?.(),
     });

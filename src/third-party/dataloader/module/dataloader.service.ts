@@ -3,7 +3,7 @@ import { Injectable, Scope } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 
 import { LoadFieldMetadata, JoinProperty } from '../types';
-import { DataloaderMetadataContainer } from '../utils';
+import { DataloaderMapper, DataloaderMetadataContainer } from '../utils';
 import { RESOLVE_DATALOADER_PROVIDER } from '../constants';
 import { CacheMapProvider } from './dataloader.module';
 
@@ -16,17 +16,17 @@ export class DataloaderService {
     private readonly cacheMapProvider: CacheMapProvider,
   ) {}
 
-  async load<Parent, Child>(key: string, parent: Parent): Promise<Array<Child>> {
+  async load<Parent, Child>(key: string, parent: Parent, ...params: Array<unknown>): Promise<Array<Child>> {
     const metadata = DataloaderMetadataContainer.getFieldMetadata(key);
     if (!metadata) {
       throw new Error(`cannot find metadata for key: ${key}`);
     }
-    const dataloader = await this.getOrCreateDataloader(key, metadata);
+    const dataloader = await this.getOrCreateDataloader(key, metadata, ...params);
     const joinProperty = metadata.joinProperty(parent);
     return dataloader.load(joinProperty);
   }
 
-  private async getOrCreateDataloader(key: string, metadata: LoadFieldMetadata) {
+  private async getOrCreateDataloader(key: string, metadata: LoadFieldMetadata, ...params: Array<unknown>) {
     if (this.dataloaderMappedByKey.has(key)) {
       return this.dataloaderMappedByKey.get(key);
     }
@@ -39,39 +39,20 @@ export class DataloaderService {
       throw new Error(`cannot find provider: ${provider.provide.name}`);
     }
 
-    const loadOneToMany = async (keys: Array<JoinProperty>) => {
-      const entities = await repository[provider.field](keys);
-      const entitiesMappedByKey = new Map<JoinProperty, Array<any>>();
-
-      for (const entity of entities) {
-        const key = metadata.inverseJoinProperty(entity);
-        if (!entitiesMappedByKey.has(key)) {
-          entitiesMappedByKey.set(key, []);
-        }
-        entitiesMappedByKey.get(key).push(entity);
-      }
-
-      return keys.map((key) => entitiesMappedByKey.get(key) || []);
+    const fetchRecords = async (keys: Array<JoinProperty>) => {
+      return repository[provider.field](keys, ...params) as unknown[];
     };
 
-    const loadOneToOne = async (keys: Array<JoinProperty>) => {
-      const entities = await repository[provider.field](keys);
-      const entitiesMappedByKey = new Map<JoinProperty, any>();
-
-      for (const key of keys) {
-        const entity = entities.find((entity) => metadata.inverseJoinProperty(entity) === key);
-        entitiesMappedByKey.set(key, entity);
-      }
-
-      return keys.map((key) => entitiesMappedByKey.get(key));
+    const batchFunction = async (keys: Array<JoinProperty>) => {
+      const entities = await fetchRecords(keys);
+      return DataloaderMapper.map(metadata, keys, entities);
     };
-
-    const batchFunction = metadata.isArray ? loadOneToMany : loadOneToOne;
 
     const dataloader = new Dataloader<number | string, any>(batchFunction, {
       cache: this.cacheMapProvider?.cache,
       cacheMap: this.cacheMapProvider?.getCacheMap?.(),
     });
+
     this.dataloaderMappedByKey.set(key, dataloader);
     return dataloader;
   }

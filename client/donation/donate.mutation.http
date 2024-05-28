@@ -14,6 +14,6 @@ mutation Donate($input: DonateDto!) {
 {
   "input": {
     "amount": 15,
-    "charityId": 3
+    "charityId": 1
   }
 }

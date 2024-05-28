@@ -2,7 +2,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import Prisma from '@prisma/client';
 
 import { Donor } from './donor.entity';
-import { LoadField } from '../third-party/dataloader/decorators';
+import { Load } from '../third-party/dataloader/decorators';
 
 @ObjectType()
 export class Access implements Prisma.Access {
@@ -14,6 +14,10 @@ export class Access implements Prisma.Access {
 
   password: string;
 
-  @LoadField(() => Donor, (access) => access.id, (parent) => parent.accessId, 'LOAD_DONOR_BY_ACCESS_ID')
+  @Load(() => Donor, {
+    by: (access) => access.id,
+    where: (donor) => donor.accessId,
+    on: 'LOAD_DONOR_BY_ACCESS_ID',
+  })
   donor?: Donor;
 }

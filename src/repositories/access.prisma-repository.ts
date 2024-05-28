@@ -2,16 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { AccessRepository } from '../domain/repositories';
 import { PrismaService } from '../infra/database';
 import { Access } from '../entities';
-import { Dataloader, ResolveProvider } from '../third-party/dataloader/decorators';
+import { DataloaderHandler, AliasFor } from '../third-party/dataloader/decorators';
 
 @Injectable()
-@ResolveProvider(AccessRepository)
+@AliasFor(AccessRepository)
 export class AccessPrismaRepository extends AccessRepository {
   constructor(private readonly prisma: PrismaService) {
     super();
   }
 
-  @Dataloader('LOAD_ACCESS_BY_ID')
+  @DataloaderHandler('LOAD_ACCESS_BY_ID')
   async findAllByIds(accessIds: number[]): Promise<Access[]> {
     return this.prisma.access.findMany({
       where: {

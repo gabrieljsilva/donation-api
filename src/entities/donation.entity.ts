@@ -2,7 +2,7 @@ import Prisma from '@prisma/client';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Donor } from './donor.entity';
 import { Charity } from './charity.entity';
-import { LoadField } from '../third-party/dataloader/decorators';
+import { Load } from '../third-party/dataloader/decorators';
 
 @ObjectType()
 export class Donation implements Prisma.Donation {
@@ -15,12 +15,16 @@ export class Donation implements Prisma.Donation {
   @Field()
   donorId: number;
 
-  @LoadField(() => Donor, (donation) => donation.donorId, (donor) => donor.id, 'LOAD_DONOR_BY_ID')
+  @Load(() => Donor, { by: (donation) => donation.donorId, where: (donor) => donor.id, on: 'LOAD_DONOR_BY_ID' })
   donor?: Donor;
 
   @Field()
   charityId: number;
 
-  @LoadField(() => Charity, (donation) => donation.charityId, (charity) => charity.id, 'LOAD_CHARITY_BY_ID')
+  @Load(() => Charity, {
+    by: (donation) => donation.charityId,
+    where: (charity) => charity.id,
+    on: 'LOAD_CHARITY_BY_ID',
+  })
   charity?: Charity;
 }

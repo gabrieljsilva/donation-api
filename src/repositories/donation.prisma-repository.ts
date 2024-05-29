@@ -5,7 +5,7 @@ import { Donation } from '../entities';
 import { DataloaderHandler, AliasFor } from '../third-party/dataloader/decorators';
 
 @Injectable()
-@AliasFor(DonationRepository)
+@AliasFor(() => DonationRepository)
 export class DonationPrismaRepository implements DonationRepository {
   constructor(
     private readonly prisma: PrismaService,

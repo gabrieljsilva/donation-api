@@ -5,7 +5,7 @@ import { PrismaService } from '../infra/database';
 import { DataloaderHandler, AliasFor } from '../third-party/dataloader/decorators';
 
 @Injectable()
-@AliasFor(DonorRepository)
+@AliasFor(() => DonorRepository)
 export class DonorPrismaRepository extends DonorRepository {
   constructor(private readonly prisma: PrismaService) {
     super();

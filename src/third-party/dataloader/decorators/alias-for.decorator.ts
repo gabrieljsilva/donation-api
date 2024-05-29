@@ -1,8 +1,9 @@
-import { RESOLVE_DATALOADER_PROVIDER } from '../constants';
+import { DataloaderMetadataContainer } from '../utils';
+import { Type } from '@nestjs/common';
+import { AliasForReturnFn } from '../types';
 
-// todo -> Turn it into a function to prevent circular dependencies errors
-export function AliasFor(provider: NonNullable<unknown>) {
+export function AliasFor(provider: AliasForReturnFn) {
   return (target: NonNullable<unknown>) => {
-    Reflect.defineMetadata(RESOLVE_DATALOADER_PROVIDER, provider, target);
+    DataloaderMetadataContainer.setAlias(target as Type, provider);
   };
 }

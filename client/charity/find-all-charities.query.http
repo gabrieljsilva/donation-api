@@ -9,6 +9,10 @@ query FindAllChatities {
         donations {
             id
             amount
+            donor {
+                id
+                name
+            }
         }
     }
 }

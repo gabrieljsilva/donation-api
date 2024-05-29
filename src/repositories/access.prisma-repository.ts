@@ -5,7 +5,7 @@ import { Access } from '../entities';
 import { DataloaderHandler, AliasFor } from '../third-party/dataloader/decorators';
 
 @Injectable()
-@AliasFor(AccessRepository)
+@AliasFor(() => AccessRepository)
 export class AccessPrismaRepository extends AccessRepository {
   constructor(private readonly prisma: PrismaService) {
     super();

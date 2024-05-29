@@ -1,5 +1,5 @@
 import { Type } from '@nestjs/common';
-import { LoadFieldMetadata, DataloaderKey } from '../types';
+import { LoadFieldMetadata, DataloaderKey, AliasForReturnFn } from '../types';
 
 interface DataloaderProvider {
   provide: Type;
@@ -9,6 +9,23 @@ interface DataloaderProvider {
 export class DataloaderMetadataContainer {
   private static metadata: Map<DataloaderKey, LoadFieldMetadata> = new Map();
   private static providers = new Map<DataloaderKey, DataloaderProvider>();
+  private static aliases = new Map<Type, AliasForReturnFn>();
+
+  static hasAlias(alias: Type): boolean {
+    return this.aliases.has(alias);
+  }
+
+  static setAlias(target: Type, alias: AliasForReturnFn) {
+    if (this.hasAlias(target)) {
+      throw new Error(`Alias for ${target} already exists`);
+    }
+
+    this.aliases.set(target, alias);
+  }
+
+  static getAlias(target: Type): AliasForReturnFn {
+    return this.aliases.get(target);
+  }
 
   static setProvider(key: DataloaderKey, provider: DataloaderProvider) {
     if (this.providers.has(key)) {

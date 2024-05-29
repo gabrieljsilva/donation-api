@@ -4,7 +4,6 @@ import { ModuleRef } from '@nestjs/core';
 
 import { LoadFieldMetadata, JoinProperty } from '../types';
 import { DataloaderMapper, DataloaderMetadataContainer } from '../utils';
-import { RESOLVE_DATALOADER_PROVIDER } from '../constants';
 import { CacheMapProvider } from './dataloader.module';
 
 @Injectable({ scope: Scope.REQUEST })
@@ -32,8 +31,8 @@ export class DataloaderService {
     }
 
     const provider = DataloaderMetadataContainer.getProvider(key);
-    const resolvedProvider = Reflect.getMetadata(RESOLVE_DATALOADER_PROVIDER, provider.provide);
-    const repository = this.moduleRef.get(resolvedProvider || provider.provide, { strict: false });
+    const resolvedProvider = DataloaderMetadataContainer.getAlias(provider.provide);
+    const repository = this.moduleRef.get(resolvedProvider?.() || provider.provide, { strict: false });
 
     if (!repository) {
       throw new Error(`cannot find provider: ${provider.provide.name}`);

@@ -4,6 +4,7 @@ import Prisma from '@prisma/client';
 import { Access } from './access.entity';
 import { Load } from '../third-party/dataloader/decorators';
 import { Donation } from './donation.entity';
+import { Relation } from '../third-party/dataloader/types';
 
 @ObjectType()
 export class Donor implements Prisma.Donor {
@@ -20,7 +21,7 @@ export class Donor implements Prisma.Donor {
   accessId: number;
 
   @Load(() => Access, { by: (donor) => donor.accessId, where: (access) => access.id, on: 'LOAD_ACCESS_BY_ID' })
-  access?: Access;
+  access?: Relation<Access>;
 
   @Load(() => [Donation], {
     by: (donor) => donor.id,

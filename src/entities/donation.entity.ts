@@ -3,6 +3,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { Donor } from './donor.entity';
 import { Charity } from './charity.entity';
 import { Load } from '../third-party/dataloader/decorators';
+import { Relation } from '../third-party/dataloader/types';
 
 @ObjectType()
 export class Donation implements Prisma.Donation {
@@ -16,7 +17,7 @@ export class Donation implements Prisma.Donation {
   donorId: number;
 
   @Load(() => Donor, { by: (donation) => donation.donorId, where: (donor) => donor.id, on: 'LOAD_DONOR_BY_ID' })
-  donor?: Donor;
+  donor?: Relation<Donor>;
 
   @Field()
   charityId: number;

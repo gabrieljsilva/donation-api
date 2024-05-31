@@ -1,10 +1,17 @@
 import Dataloader from 'dataloader';
-import { Injectable, Scope } from '@nestjs/common';
+import { Injectable, Scope, Type } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 
 import { LoadFieldMetadata, JoinProperty } from '../types';
-import { DataloaderMapper, DataloaderMetadataContainer } from '../utils';
+import { DataloaderMapper } from '../utils';
 import { CacheMapProvider } from './dataloader.module';
+import { DataloaderMetadataService } from './dataloader-metadata.service';
+
+interface LoadParams<Parent> {
+  from: Type;
+  by: [Parent, ...any];
+  on?: string;
+}
 
 @Injectable({ scope: Scope.REQUEST })
 export class DataloaderService {
@@ -13,15 +20,31 @@ export class DataloaderService {
   constructor(
     private readonly moduleRef: ModuleRef,
     private readonly cacheMapProvider: CacheMapProvider,
+    private readonly dataloaderMetadataService: DataloaderMetadataService,
   ) {}
 
-  async load<Parent, Child>(key: string, parent: Parent, ...params: Array<unknown>): Promise<Array<Child>> {
-    const metadata = DataloaderMetadataContainer.getFieldMetadata(key);
-    if (!metadata) {
-      throw new Error(`cannot find metadata for key: ${key}`);
+  async load<Parent, Child>(child: Type, params: LoadParams<Parent>): Promise<Array<Child>> {
+    const metadataMap = this.dataloaderMetadataService.getMetadata(params.from, child);
+
+    if (!metadataMap) {
+      throw new Error(`cannot find metadata for ${parent.name} -> ${params.from.name} `);
     }
-    const dataloader = await this.getOrCreateDataloader(key, metadata, ...params);
-    const joinProperty = metadata.joinProperty(parent);
+
+    const hasMultipleRelations = metadataMap.size > 1;
+
+    if (hasMultipleRelations && !params.on) {
+      throw new Error(
+        `multiple relations found between ${params.from.name} and ${child.name}, please provide the 'on' field.`,
+      );
+    }
+
+    const metadata: LoadFieldMetadata = hasMultipleRelations
+      ? metadataMap.get(params.on)
+      : metadataMap.values().next().value;
+
+    const [parentData, args = []] = params.by;
+    const dataloader = await this.getOrCreateDataloader(metadata.key, metadata, ...args);
+    const joinProperty = metadata.joinProperty(parentData);
     return dataloader.load(joinProperty);
   }
 
@@ -30,9 +53,9 @@ export class DataloaderService {
       return this.dataloaderMappedByKey.get(key);
     }
 
-    const provider = DataloaderMetadataContainer.getProvider(key);
-    const resolvedProvider = DataloaderMetadataContainer.getAlias(provider.provide);
-    const repository = this.moduleRef.get(resolvedProvider?.() || provider.provide, { strict: false });
+    const provider = this.dataloaderMetadataService.getDataloaderHandler(key);
+    const resolvedProvider = this.dataloaderMetadataService.getAlias(provider.provide);
+    const repository = this.moduleRef.get(resolvedProvider || provider.provide, { strict: false });
 
     if (!repository) {
       throw new Error(`cannot find provider: ${provider.provide.name}`);

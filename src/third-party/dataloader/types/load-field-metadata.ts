@@ -1,9 +1,7 @@
 import { DataloaderChildFN, DataloaderKey, JoinPropertyFn } from './dataloader.types';
-import { Type } from '@nestjs/common';
 
 interface LoadFieldMetadataConstructor<Parent, Child> {
   key: DataloaderKey;
-  parent: Type<Parent>;
   child: DataloaderChildFN<Child>;
   joinProperty: JoinPropertyFn<Parent>;
   inverseJoinProperty?: JoinPropertyFn<Child>;
@@ -12,7 +10,6 @@ interface LoadFieldMetadataConstructor<Parent, Child> {
 
 export class LoadFieldMetadata<Parent = any, Child = any> implements LoadFieldMetadataConstructor<Parent, Child> {
   key: string;
-  parent: Type<Parent>;
   child: DataloaderChildFN<Child>;
   joinProperty: JoinPropertyFn<Parent>;
   inverseJoinProperty?: JoinPropertyFn<Child>;
@@ -20,7 +17,6 @@ export class LoadFieldMetadata<Parent = any, Child = any> implements LoadFieldMe
 
   constructor(constructor: LoadFieldMetadataConstructor<Parent, Child>) {
     this.key = constructor.key;
-    this.parent = constructor.parent;
     this.child = constructor.child;
     this.joinProperty = constructor.joinProperty;
     this.inverseJoinProperty = constructor.inverseJoinProperty;

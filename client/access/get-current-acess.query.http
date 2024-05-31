@@ -9,6 +9,9 @@ query GetCurrentAccess {
         donor {
             id
             name
+            donations {
+                id
+            }
         }
     }
 }

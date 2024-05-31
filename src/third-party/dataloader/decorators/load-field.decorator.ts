@@ -1,6 +1,6 @@
 import { Type } from '@nestjs/common';
 import { DataloaderChildFN, JoinPropertyFn, LoadFieldMetadata } from '../types';
-import { DataloaderMetadataContainer } from '../utils';
+import { DataloaderContainer } from '../utils';
 
 interface LoadFieldOptions<Child, Parent> {
   by: JoinPropertyFn<Parent>;
@@ -14,15 +14,15 @@ export function Load<Child = any, Parent = any>(
 ) {
   const { by, where, on } = options;
   return (target: NonNullable<unknown>, propertyKey: string) => {
+    const parent = target.constructor as Type<Parent>;
     const fieldMetadata = new LoadFieldMetadata({
       key: on,
       child: child,
-      parent: target.constructor as Type<Parent>,
       joinProperty: by,
       inverseJoinProperty: where,
       field: propertyKey,
     });
 
-    DataloaderMetadataContainer.setFieldMetadata(fieldMetadata);
+    DataloaderContainer.addRelationMetadata(() => parent, child, on, fieldMetadata);
   };
 }

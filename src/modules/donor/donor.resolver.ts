@@ -7,7 +7,7 @@ import { DataloaderService } from '../../third-party/dataloader/module';
 export class DonorResolver {
   constructor(
     private readonly donorService: DonorService,
-    private readonly dataloaderService: DataloaderService,
+    private readonly dataloader: DataloaderService,
   ) {}
 
   @Query(() => [Donor])
@@ -17,11 +17,11 @@ export class DonorResolver {
 
   @ResolveField(() => Access, { nullable: true })
   async access(@Parent() donor: Donor) {
-    return this.dataloaderService.load<Donor, Access>('LOAD_ACCESS_BY_ID', donor);
+    return this.dataloader.load(Access, { from: Donor, by: [donor] });
   }
 
   @ResolveField(() => [Donation])
   async donations(@Parent() donor: Donor) {
-    return this.dataloaderService.load('LOAD_DONATIONS_BY_DONOR_ID', donor);
+    return this.dataloader.load(Donation, { from: Donor, by: [donor], on: 'LOAD_DONATIONS_BY_DONOR_ID' });
   }
 }

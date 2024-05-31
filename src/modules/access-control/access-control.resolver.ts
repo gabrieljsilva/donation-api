@@ -36,6 +36,6 @@ export class AccessControlResolver {
 
   @ResolveField(() => Donor, { nullable: true })
   async donor(@Parent() access: Access) {
-    return this.dataloader.load('LOAD_DONOR_BY_ACCESS_ID', access);
+    return this.dataloader.load(Donor, { from: Access, by: [access] });
   }
 }

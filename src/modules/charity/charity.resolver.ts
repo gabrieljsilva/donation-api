@@ -23,6 +23,6 @@ export class CharityResolver {
 
   @ResolveField(() => [Donation])
   async donations(@Parent() charity: Charity) {
-    return this.dataloader.load('LOAD_DONATIONS_BY_CHARITY_ID', charity);
+    return this.dataloader.load(Donation, { from: Charity, by: [charity], on: 'LOAD_DONATIONS_BY_CHARITY_ID' });
   }
 }

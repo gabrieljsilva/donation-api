@@ -24,11 +24,11 @@ export class DonationResolver {
 
   @ResolveField(() => Donor)
   async donor(@Parent() donation: Donation) {
-    return this.dataloader.load('LOAD_DONOR_BY_ID', donation);
+    return this.dataloader.load(Donor, { from: Donation, by: [donation], on: 'LOAD_DONOR_BY_ID' });
   }
 
   @ResolveField(() => Charity)
   async charity(@Parent() donation: Donation) {
-    return this.dataloader.load('LOAD_CHARITY_BY_ID', donation);
+    return this.dataloader.load(Charity, { from: Donation, by: [donation], on: 'LOAD_CHARITY_BY_ID' });
   }
 }

@@ -2,7 +2,7 @@ import Dataloader from 'dataloader';
 import { Injectable, Scope, Type } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 
-import { LoadFieldMetadata, JoinProperty } from '../types';
+import { LoadFieldMetadata, JoinProperty, DataloaderChild } from '../types';
 import { DataloaderMapper } from '../utils';
 import { CacheMapProvider } from './dataloader.module';
 import { DataloaderMetadataService } from './dataloader-metadata.service';
@@ -23,8 +23,14 @@ export class DataloaderService {
     private readonly dataloaderMetadataService: DataloaderMetadataService,
   ) {}
 
-  async load<Parent, Child>(child: Type<Child>, params: LoadParams<Parent>): Promise<Array<Child>> {
-    const metadataMap = this.dataloaderMetadataService.getMetadata(params.from, child);
+  async load<Parent, Child>(child: [Type<Child>], params: LoadParams<Parent>): Promise<Array<Array<Child>>>;
+  async load<Parent, Child>(child: Type<Child>, params: LoadParams<Parent>): Promise<Child[]>;
+  async load<Parent, Child>(
+    child: Type<Child> | [Type<Child>],
+    params: LoadParams<Parent>,
+  ): Promise<Child[] | Child[][]> {
+    const childType = Array.isArray(child) ? child[0] : child;
+    const metadataMap = this.dataloaderMetadataService.getMetadata(params.from, childType);
 
     if (!metadataMap) {
       throw new Error(`cannot find metadata for ${parent.name} -> ${params.from.name} `);
@@ -34,7 +40,7 @@ export class DataloaderService {
 
     if (hasMultipleRelations && !params.on) {
       throw new Error(
-        `multiple relations found between ${params.from.name} and ${child.name}, please provide the 'on' field.`,
+        `multiple relations found between ${params.from.name} and ${childType.name}, please provide the 'on' field.`,
       );
     }
 

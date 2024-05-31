@@ -24,6 +24,13 @@ export class CacheMapProvider {
  * Esses módulos devem exportar todos os providers que possuem métodos decorados com @DataloaderHandler.
  * O módulo deve ser capaz de resolver esses providers e adicionar ao DataloaderService.
  *
+ *
+ *
+ * Outro problema é na tipagem do método load, que não sabe distinguir se um relacionamento retorna um array ou não.
+ * Propostas:
+ * 1 - Criar um método load many que retorna uma matriz;
+ * 2 - O primeiro parâmetro do método load ser uma tupla do objeto que será retornado e inferir o retorno do método;
+ *
  */
 
 export class DataloaderModule {

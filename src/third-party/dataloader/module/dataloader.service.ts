@@ -23,7 +23,7 @@ export class DataloaderService {
     private readonly dataloaderMetadataService: DataloaderMetadataService,
   ) {}
 
-  async load<Parent, Child>(child: Type, params: LoadParams<Parent>): Promise<Array<Child>> {
+  async load<Parent, Child>(child: Type<Child>, params: LoadParams<Parent>): Promise<Array<Child>> {
     const metadataMap = this.dataloaderMetadataService.getMetadata(params.from, child);
 
     if (!metadataMap) {

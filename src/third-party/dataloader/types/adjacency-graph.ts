@@ -22,14 +22,21 @@ export class AdjacencyGraph<V, E> {
     this.adjacencyList.get(vertex1)?.set(vertex2, edge);
   }
 
-  transform<NewVertices, NewEdges>(resolveVertexFn: (vertex: V) => NewVertices, resolveEdgesFn: (edge: E) => NewEdges) {
+  getEdges(vertex: V) {
+    return this.adjacencyList.get(vertex);
+  }
+
+  transform<NewVertices, NewEdges>(
+    resolveVertexFn: (vertex: V) => NewVertices,
+    resolveEdgesFn: (edge: E, neighbor: NewVertices) => NewEdges,
+  ) {
     const newGraph = new AdjacencyGraph<NewVertices, NewEdges>();
     for (const [vertex, edges] of this.adjacencyList) {
       const resolvedVertex = resolveVertexFn(vertex);
       newGraph.addVertex(resolvedVertex);
       for (const [neighbor, value] of edges) {
         const resolvedNeighbor = resolveVertexFn(neighbor);
-        newGraph.addEdge(resolvedVertex, resolvedNeighbor, resolveEdgesFn(value));
+        newGraph.addEdge(resolvedVertex, resolvedNeighbor, resolveEdgesFn(value, resolvedNeighbor));
       }
     }
     return newGraph;

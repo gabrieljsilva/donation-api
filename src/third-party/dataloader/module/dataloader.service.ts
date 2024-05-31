@@ -1,4 +1,4 @@
-import * as Dataloader from 'dataloader';
+import Dataloader from 'dataloader';
 import { Injectable, Scope } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 

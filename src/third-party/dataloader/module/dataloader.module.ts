@@ -21,6 +21,7 @@ export class CacheMapProvider {
  * Proposta: no método register, adicionar um parâmetro que recebe uma lista de módulos para serem importados.
  * Esses módulos devem exportar todos os providers que possuem métodos decorados com @DataloaderHandler.
  * O módulo deve ser capaz de resolver esses providers e adicionar ao DataloaderService.
+ *
  */
 
 export class DataloaderModule {

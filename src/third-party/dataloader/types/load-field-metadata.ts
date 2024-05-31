@@ -1,8 +1,8 @@
+import { DataloaderChildFN, DataloaderKey, JoinPropertyFn } from './dataloader.types';
 import { Type } from '@nestjs/common';
-import { DataloaderChildFN, JoinPropertyFn } from './dataloader.types';
 
 interface LoadFieldMetadataConstructor<Parent, Child> {
-  key: string;
+  key: DataloaderKey;
   parent: Type<Parent>;
   child: DataloaderChildFN<Child>;
   joinProperty: JoinPropertyFn<Parent>;

@@ -19,11 +19,12 @@ model Access {
 model Donor {
   id        Int      @id @default(autoincrement())
   name      String
-  birthDate DateTime
-  accessId  Int
+  birthDate DateTime @map("birth_date")
+  accessId  Int      @map("access_id")
 
-  access   Access     @relation(fields: [accessId], references: [id])
-  Donation Donation[]
+  access         Access          @relation(fields: [accessId], references: [id])
+  donations      Donation[]
+  donorDocuments DonorDocument[]
 
   @@map("donors")
 }
@@ -31,8 +32,8 @@ model Donor {
 model Donation {
   id        Int   @id @default(autoincrement())
   amount    Float
-  donorId   Int
-  charityId Int
+  donorId   Int   @map("donor_id")
+  charityId Int   @map("charity_id")
 
   donor   Donor   @relation(fields: [donorId], references: [id])
   charity Charity @relation(fields: [charityId], references: [id])
@@ -41,9 +42,47 @@ model Donation {
 }
 
 model Charity {
-  id       Int        @id @default(autoincrement())
-  name     String
-  Donation Donation[]
+  id               Int               @id @default(autoincrement())
+  name             String
+  donations        Donation[]
+  charityDocuments CharityDocument[]
 
   @@map("charities")
+}
+
+model CharityDocument {
+  id         Int @id @default(autoincrement())
+  charityId  Int @map("charity_id")
+  documentId Int @map("document_id")
+
+  charity  Charity  @relation(fields: [charityId], references: [id])
+  document Document @relation(fields: [documentId], references: [id])
+
+  @@map("charity_documents")
+}
+
+model DonorDocument {
+  id         Int @id @default(autoincrement())
+  donorId    Int @map("donor_id")
+  documentId Int @map("document_id")
+
+  donor    Donor    @relation(fields: [donorId], references: [id])
+  document Document @relation(fields: [documentId], references: [id])
+
+  @@map("donor_documents")
+}
+
+model Document {
+  id              Int               @id @default(autoincrement())
+  type            DOCUMENT_TYPE
+  document        String
+  charityDocument CharityDocument[]
+  donorDocument   DonorDocument[]
+
+  @@map("documents")
+}
+
+enum DOCUMENT_TYPE {
+  CPF
+  CNPJ
 }

@@ -25,6 +25,7 @@ export class AccessControlService {
       createAccessDto.email,
       await Encrypt.hash(createAccessDto.password),
     );
+
     await this.donorRepository.create(access.id, createAccessDto.name, createAccessDto.birthDate);
 
     return access;

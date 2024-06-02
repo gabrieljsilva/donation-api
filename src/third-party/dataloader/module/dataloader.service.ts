@@ -2,7 +2,7 @@ import Dataloader from 'dataloader';
 import { Injectable, Scope, Type } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 
-import { LoadFieldMetadata, JoinProperty, DataloaderChild } from '../types';
+import { LoadFieldMetadata, JoinProperty } from '../types';
 import { DataloaderMapper } from '../utils';
 import { CacheMapProvider } from './dataloader.module';
 import { DataloaderMetadataService } from './dataloader-metadata.service';

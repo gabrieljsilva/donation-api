@@ -1,24 +1,34 @@
 import { Injectable } from '@nestjs/common';
-import { CharityRepository } from '../domain/repositories';
+import { CharityFoundByNameOrDocument, CharityRepository } from '../domain/repositories';
 import { Charity } from '../entities';
 import { PrismaService } from '../infra/database';
 import { DataloaderHandler, AliasFor } from '../third-party/dataloader/decorators';
+import { CreateCharityDto } from '../modules/charity/dto';
+import { DOCUMENT_TYPE } from '../domain/enum';
 
 @Injectable()
 @AliasFor(() => CharityRepository)
 export class CharityPrismaRepository implements CharityRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(name: string): Promise<Charity> {
-    const charityAlreadyExists = await this.prisma.charity.findFirst({
-      where: { name },
+  async create(createCharityDto: CreateCharityDto): Promise<Charity> {
+    const { name, CNPJ } = createCharityDto;
+
+    return this.prisma.charity.create({
+      data: {
+        name,
+        charityDocuments: {
+          create: {
+            document: {
+              create: {
+                document: CNPJ,
+                type: DOCUMENT_TYPE.CNPJ,
+              },
+            },
+          },
+        },
+      },
     });
-
-    if (charityAlreadyExists) {
-      throw new Error(`Charity ${name} already exists`);
-    }
-
-    return this.prisma.charity.create({ data: { name } });
   }
 
   async deleteById(id: number): Promise<Charity> {
@@ -56,5 +66,21 @@ export class CharityPrismaRepository implements CharityRepository {
         id: { in: ids },
       },
     });
+  }
+
+  async findCharitiesByNameOrDocument(name: string, type: DOCUMENT_TYPE, CNPJ: string) {
+    return this.prisma.$queryRaw<Array<CharityFoundByNameOrDocument>>`
+      SELECT
+      Charity.id as id,
+      Charity.name as name,
+      Document.document as cnpj
+          FROM charities Charity
+              LEFT JOIN charity_documents CharityDocument
+                  ON Charity.id = CharityDocument.charity_id
+              LEFT JOIN documents Document
+                  ON CharityDocument.document_id = Document.id
+              WHERE Charity.name = ${name}
+                 OR (Document.type = 'CNPJ' AND Document.document = ${CNPJ});
+    `;
   }
 }

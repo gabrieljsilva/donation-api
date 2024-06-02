@@ -15,12 +15,14 @@ import { DataloaderModule } from './third-party/dataloader/module';
 import { DonorModule } from './modules/donor/donor.module';
 import { CharityModule } from './modules/charity/charity.module';
 import { DonationModule } from './modules/donation/donation.module';
+import { formatError } from './utils/graphql/format-graphql-errors';
 
 @Module({
   imports: [
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      formatError: formatError,
     }),
     JwtModule.register({
       secret: 'MySecretKey',

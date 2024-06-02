@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CharityRepository } from '../../domain/repositories';
+import { CharityRepository } from 'src/domain/repositories';
 import { CreateCharityDto } from './dto';
+import { DOCUMENT_TYPE } from 'src/domain/enum';
+import { ResourceAlreadyExistsException } from 'src/exceptions';
 
 @Injectable()
 export class CharityService {
@@ -11,6 +13,32 @@ export class CharityService {
   }
 
   async createCharity(createCharityDto: CreateCharityDto) {
-    return this.charityRepository.create(createCharityDto.name);
+    await this.checkIfCharityExistsOrThrowError(createCharityDto.name, createCharityDto.CNPJ);
+    return this.charityRepository.create(createCharityDto);
+  }
+
+  async checkIfCharityExistsOrThrowError(name: string, CNPJ: string) {
+    const charitiesFoundByNameOrDocument = await this.charityRepository.findCharitiesByNameOrDocument(
+      name,
+      DOCUMENT_TYPE.CNPJ,
+      CNPJ,
+    );
+
+    console.log(charitiesFoundByNameOrDocument);
+
+    const hasCharityWithName = charitiesFoundByNameOrDocument.find((charity) => charity.name === name);
+    const hasCharityWithDocument = charitiesFoundByNameOrDocument.find((charity) => charity.cnpj === CNPJ);
+
+    if (hasCharityWithName || hasCharityWithDocument) {
+      const conflicts = {};
+      if (hasCharityWithName) {
+        conflicts['name'] = name;
+      }
+      if (hasCharityWithDocument) {
+        conflicts['cnpj'] = CNPJ;
+      }
+
+      throw new ResourceAlreadyExistsException(conflicts);
+    }
   }
 }

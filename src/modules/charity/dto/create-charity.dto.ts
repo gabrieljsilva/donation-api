@@ -4,4 +4,7 @@ import { Field, InputType } from '@nestjs/graphql';
 export class CreateCharityDto {
   @Field()
   name: string;
+
+  @Field()
+  CNPJ: string;
 }

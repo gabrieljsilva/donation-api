@@ -24,6 +24,10 @@ export class CacheMapProvider {
  * Esses módulos devem exportar todos os providers que possuem métodos decorados com @DataloaderHandler.
  * O módulo deve ser capaz de resolver esses providers e adicionar ao DataloaderService.
  *
+ * Atualmente temos suporte ao método Load, que suporta relacionamentos 1:1 e 1:N;
+ * Porém, não temos suporte a relacionamentos N:N;
+ * Deve se pensar em uma forma de adicionar suporte a relacionamentos N:N;
+ *
  */
 
 export class DataloaderModule {

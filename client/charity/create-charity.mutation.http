@@ -11,6 +11,7 @@ mutation CreateCharity($input: CreateCharityDto!) {
 
 {
   "input": {
-    "name": "Criança Feliz"
+    "name": "Criança Felizzzz",
+    "CNPJ": "123333444434"
   }
 }

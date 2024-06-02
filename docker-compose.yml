@@ -22,7 +22,7 @@ services:
     container_name: postgres
     image: 'postgres:15-alpine'
     ports:
-      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+      - 5432:${POSTGRES_PORT}
     environment:
       - POSTGRES_DB=${POSTGRES_NAME}
       - POSTGRES_USER=${POSTGRES_USER}

@@ -1,0 +1,19 @@
+### Find All Documents By Charity Id
+GRAPHQL {{graphql}}
+Authorization: {{accessToken}}
+
+query FindAllDocumentsByCharityId($charityId: Int!) {
+    findAllDocumentsByCharityId(charityId: $charityId){
+        id
+        type
+        document
+        charity {
+            id
+            name
+        }
+    }
+}
+
+{
+  "charityId": 2
+}

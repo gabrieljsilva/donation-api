@@ -26,4 +26,14 @@ export class DocumentPrismaRepository implements DocumentRepository {
       },
     });
   }
+
+  async findAllByCharityId(charityId: number): Promise<Array<Document>> {
+    return this.prisma.document.findMany({
+      where: {
+        charityDocument: {
+          some: { charityId },
+        },
+      },
+    });
+  }
 }

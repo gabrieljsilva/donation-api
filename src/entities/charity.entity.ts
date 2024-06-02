@@ -1,4 +1,4 @@
-import Prisma from '@prisma/client';
+import Prisma, { CharityDocument } from '@prisma/client';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { Donation } from './donation.entity';
 import { Document } from './document.entity';
@@ -25,4 +25,6 @@ export class Charity implements Prisma.Charity {
     on: 'LOAD_DOCUMENTS_BY_CHARITY_ID',
   })
   documents?: Array<Document>;
+
+  charityDocuments?: Array<CharityDocument>;
 }

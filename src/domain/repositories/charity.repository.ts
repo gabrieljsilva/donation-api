@@ -1,5 +1,6 @@
 import { Charity } from 'src/entities';
 import { CreateCharityDto } from 'src/modules/charity/dto';
+import { DOCUMENT_TYPE } from '@prisma/client';
 
 export interface CharityFoundByNameOrDocument {
   id: number;
@@ -17,7 +18,9 @@ export abstract class CharityRepository {
   abstract findByIds(ids: Array<number>): Promise<Array<Charity>>;
   abstract findCharitiesByNameOrDocument(
     name: string,
-    type: string,
+    type: DOCUMENT_TYPE,
     document: string,
   ): Promise<Array<CharityFoundByNameOrDocument>>;
+
+  abstract findCharitiesByDocumentsIds(documentsIds: Array<number>): Promise<Array<Charity>>;
 }

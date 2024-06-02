@@ -83,4 +83,22 @@ export class CharityPrismaRepository implements CharityRepository {
                  OR (Document.type = 'CNPJ' AND Document.document = ${CNPJ});
     `;
   }
+
+  @DataloaderHandler('LOAD_CHARITIES_BY_DOCUMENTS_IDS')
+  async findCharitiesByDocumentsIds(documentsIds: Array<number>) {
+    return this.prisma.charity.findMany({
+      where: {
+        charityDocuments: {
+          some: {
+            document: {
+              id: { in: documentsIds },
+            },
+          },
+        },
+      },
+      include: {
+        charityDocuments: true,
+      },
+    });
+  }
 }

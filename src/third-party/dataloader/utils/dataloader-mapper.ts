@@ -9,7 +9,16 @@ export class DataloaderMapper {
     const entitiesMappedByKey = new Map<JoinProperty, any>();
 
     for (const key of keys) {
-      const entity = entities.find((entity) => metadata.inverseJoinProperty(entity) === key);
+      const entity = entities.find((entity) => {
+        const inverseKeyOrKeys = metadata.inverseJoinProperty(entity);
+
+        if (Array.isArray(inverseKeyOrKeys)) {
+          return inverseKeyOrKeys.includes(key);
+        }
+
+        return inverseKeyOrKeys === key;
+      });
+
       entitiesMappedByKey.set(key, entity);
     }
 

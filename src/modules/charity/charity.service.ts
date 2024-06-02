@@ -24,8 +24,6 @@ export class CharityService {
       CNPJ,
     );
 
-    console.log(charitiesFoundByNameOrDocument);
-
     const hasCharityWithName = charitiesFoundByNameOrDocument.find((charity) => charity.name === name);
     const hasCharityWithDocument = charitiesFoundByNameOrDocument.find((charity) => charity.cnpj === CNPJ);
 

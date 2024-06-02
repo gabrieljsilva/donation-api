@@ -51,10 +51,10 @@ It provides a way to create a dataloader using decorators, like relations.
 #### Features
 - [x] @Load decorator for OneToOne relations;
 - [x] @Load decorator for OneToMany relations;
-- [x] @Load decorator for ManyToMany relations;
 - [x] Nest.js Module;
 - [x] Nest.js Service;
 - [x] Simple Configurable cache;
+- [ ] @Load decorator for ManyToMany relations;
 - [ ] Local dataloader handlers resolution;
 - [ ] @CacheStrategy decorator to set up cache in specific resolver fields;
 
@@ -64,6 +64,11 @@ A way to load the DataloaderHandlers locally should be considered.
 Proposal: In the register method, add a parameter that receives a list of modules to be imported.
 These modules should export all the providers that have methods decorated with @DataloaderHandler.
 The module should be able to resolve these providers and add them to the DataloaderService.
+
+##### LoadManyToMany
+Currently, we do not have a specific decorator to load ManyToMany relationships. 
+The idea is to create a decorator that efficiently loads ManyToMany relationships.
+
 
 ### Decorated Factory
 This library aims to provide a way to create instances for testing scenarios

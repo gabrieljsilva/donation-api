@@ -1,4 +1,4 @@
-import Prisma from '@prisma/client';
+import Prisma, { CharityDocument } from '@prisma/client';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { DOCUMENT_TYPE } from 'src/domain/enum';
 
@@ -12,4 +12,6 @@ export class Document implements Prisma.Document {
 
   @Field()
   type: DOCUMENT_TYPE;
+
+  charityDocument?: Array<CharityDocument>;
 }

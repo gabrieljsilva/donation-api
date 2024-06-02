@@ -16,11 +16,30 @@ export class DataloaderMapper {
     return keys.map((key) => entitiesMappedByKey.get(key));
   }
 
+  // This method actually loads OneToMany and ManyToMany relationships
+  // Split it into two methods, one for OneToMany and one for ManyToMany
+  // Find a way to identify when keys is an array
+  // when keys is an array, call mapOneToMany
+  // and when keys is array of arrays, call mapManyToMany
   private static mapOneToMany(metadata: LoadFieldMetadata, keys: Array<JoinProperty>, entities: Array<unknown>) {
     const entitiesMappedByKey = new Map<JoinProperty, Array<any>>();
 
     for (const entity of entities) {
-      const key = metadata.inverseJoinProperty(entity);
+      const keyOrKeys = metadata.inverseJoinProperty(entity);
+
+      // Loads Many-To-Many Relationships
+      if (Array.isArray(keyOrKeys)) {
+        for (const key of keyOrKeys) {
+          if (!entitiesMappedByKey.has(key)) {
+            entitiesMappedByKey.set(key, []);
+          }
+          entitiesMappedByKey.get(key).push(entity);
+        }
+        continue;
+      }
+
+      // Loads One-To-Many Relationships
+      const key = keyOrKeys;
       if (!entitiesMappedByKey.has(key)) {
         entitiesMappedByKey.set(key, []);
       }

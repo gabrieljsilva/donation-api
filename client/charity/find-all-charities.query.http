@@ -6,7 +6,11 @@ query FindAllChatities {
     findAllCharities {
         id
         name
-
+        documents {
+            id
+            type
+            document
+        }
     }
 }
 

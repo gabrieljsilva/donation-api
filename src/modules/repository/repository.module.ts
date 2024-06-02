@@ -1,10 +1,17 @@
 import { DynamicModule, Provider } from '@nestjs/common';
-import { AccessRepository, CharityRepository, DonationRepository, DonorRepository } from '../../domain/repositories';
+import {
+  AccessRepository,
+  CharityRepository,
+  DocumentRepository,
+  DonationRepository,
+  DonorRepository,
+} from '../../domain/repositories';
 import {
   AccessPrismaRepository,
   DonorPrismaRepository,
   CharityPrismaRepository,
   DonationPrismaRepository,
+  DocumentPrismaRepository,
 } from '../../repositories';
 
 export class RepositoryModule {
@@ -25,6 +32,10 @@ export class RepositoryModule {
       {
         provide: DonationRepository,
         useClass: DonationPrismaRepository,
+      },
+      {
+        provide: DocumentRepository,
+        useClass: DocumentPrismaRepository,
       },
     ];
 

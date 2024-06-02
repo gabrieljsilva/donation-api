@@ -1,10 +1,10 @@
-import { DataloaderChildFN, DataloaderKey, JoinPropertyFn } from './dataloader.types';
+import { DataloaderChildFN, DataloaderKey, InverseJoinPropertyFn, JoinPropertyFn } from './dataloader.types';
 
 interface LoadFieldMetadataConstructor<Parent, Child> {
   key: DataloaderKey;
   child: DataloaderChildFN<Child>;
   joinProperty: JoinPropertyFn<Parent>;
-  inverseJoinProperty?: JoinPropertyFn<Child>;
+  inverseJoinProperty?: InverseJoinPropertyFn<Child>;
   field: string;
 }
 
@@ -12,7 +12,7 @@ export class LoadFieldMetadata<Parent = any, Child = any> implements LoadFieldMe
   key: string;
   child: DataloaderChildFN<Child>;
   joinProperty: JoinPropertyFn<Parent>;
-  inverseJoinProperty?: JoinPropertyFn<Child>;
+  inverseJoinProperty?: InverseJoinPropertyFn<Child>;
   field: string;
 
   constructor(constructor: LoadFieldMetadataConstructor<Parent, Child>) {

@@ -1,10 +1,10 @@
 import { Type } from '@nestjs/common';
-import { DataloaderChildFN, JoinPropertyFn, LoadFieldMetadata } from '../types';
+import { DataloaderChildFN, InverseJoinPropertyFn, JoinPropertyFn, LoadFieldMetadata } from '../types';
 import { DataloaderContainer } from '../utils';
 
 interface LoadFieldOptions<Child, Parent> {
   by: JoinPropertyFn<Parent>;
-  where: JoinPropertyFn<Child>;
+  where: InverseJoinPropertyFn<Child>;
   on: string;
 }
 

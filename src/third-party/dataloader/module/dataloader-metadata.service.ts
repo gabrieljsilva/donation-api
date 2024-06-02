@@ -1,5 +1,5 @@
-import { AdjacencyGraph, DataloaderKey, MetadataMappedByKey } from '../types';
 import { Injectable, Type } from '@nestjs/common';
+import { AdjacencyGraph, DataloaderKey, MetadataMappedByKey } from '../types';
 import { DataloaderHandler } from '../utils';
 
 @Injectable()
@@ -23,7 +23,7 @@ export class DataloaderMetadataService {
   }
 
   getMetadata(parent: Type, child: Type) {
-    return this.relations.getEdges(parent)?.get(child);
+    return this.relations.getNeighbors(parent)?.get(child);
   }
 
   getAlias(type: Type) {

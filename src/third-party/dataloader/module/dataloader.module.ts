@@ -15,21 +15,6 @@ export class CacheMapProvider {
   getCacheMap: () => CacheMap<any, any>;
 }
 
-/**
- *
- * Atualmente o módulo Dataloader só carrega os DataloaderHandlers globalmente, o que não é o ideal;
- * Deve se pensar em uma forma de carregar os DataloaderHandlers localmente;
- *
- * Proposta: no método register, adicionar um parâmetro que recebe uma lista de módulos para serem importados.
- * Esses módulos devem exportar todos os providers que possuem métodos decorados com @DataloaderHandler.
- * O módulo deve ser capaz de resolver esses providers e adicionar ao DataloaderService.
- *
- * Atualmente temos suporte ao método Load, que suporta relacionamentos 1:1 e 1:N;
- * Porém, não temos suporte a relacionamentos N:N;
- * Deve se pensar em uma forma de adicionar suporte a relacionamentos N:N;
- *
- */
-
 export class DataloaderModule {
   static register(options?: DataloaderModuleOptions): DynamicModule {
     const { global = true, getCacheMap, cache = false } = options || {};

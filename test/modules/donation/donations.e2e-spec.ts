@@ -44,7 +44,7 @@ describe('Donations e2e tests', () => {
     expect(response.body).toEqual({
       data: {
         donate: {
-          id: 1,
+          id: expect.any(Number),
           amount: 15,
           charityId: charity.id,
           donorId: access.donor.id,

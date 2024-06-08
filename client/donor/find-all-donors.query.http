@@ -11,6 +11,10 @@ query FindAllDonors {
             id
             amount
         }
+        access {
+            id
+            email
+        }
     }
 }
 

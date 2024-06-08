@@ -3,6 +3,7 @@ import { AccessRepository } from '../domain/repositories';
 import { PrismaService } from '../infra/database';
 import { Access } from '../entities';
 import { DataloaderHandler, AliasFor } from '../third-party/dataloader/decorators';
+import { LOAD_ACCESSES_BY_IDS } from 'src/constants';
 
 @Injectable()
 @AliasFor(() => AccessRepository)
@@ -11,7 +12,7 @@ export class AccessPrismaRepository extends AccessRepository {
     super();
   }
 
-  @DataloaderHandler('LOAD_ACCESS_BY_ID')
+  @DataloaderHandler(LOAD_ACCESSES_BY_IDS)
   async findAllByIds(accessIds: number[]): Promise<Access[]> {
     return this.prisma.access.findMany({
       where: {

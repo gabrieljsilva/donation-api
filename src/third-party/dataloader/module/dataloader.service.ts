@@ -1,21 +1,22 @@
 import Dataloader from 'dataloader';
 import { Injectable, Scope, Type } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
+import jp from 'jsonpath';
 
-import { LoadFieldMetadata, JoinProperty } from '../types';
+import { JoinProperty, RelationMetadata } from '../types';
 import { DataloaderMapper } from '../utils';
 import { CacheMapProvider } from './dataloader.module';
 import { DataloaderMetadataService } from './dataloader-metadata.service';
 
 interface LoadParams<Parent> {
   from: Type;
+  field?: string;
   by: [Parent, ...any];
-  on?: string;
 }
 
 @Injectable({ scope: Scope.REQUEST })
 export class DataloaderService {
-  private dataloaderMappedByKey = new Map<string, Dataloader<JoinProperty, any>>();
+  private dataloaderMappedByParentField = new Map<Type, Map<string, Dataloader<JoinProperty, any>>>();
 
   constructor(
     private readonly moduleRef: ModuleRef,
@@ -23,52 +24,59 @@ export class DataloaderService {
     private readonly dataloaderMetadataService: DataloaderMetadataService,
   ) {}
 
-  async load<Parent, Child>(child: [Type<Child>], params: LoadParams<Parent>): Promise<Array<Array<Child>>>;
-  async load<Parent, Child>(child: Type<Child>, params: LoadParams<Parent>): Promise<Child[]>;
-  async load<Parent, Child>(
-    child: Type<Child> | [Type<Child>],
-    params: LoadParams<Parent>,
-  ): Promise<Child[] | Child[][]> {
-    const childType = Array.isArray(child) ? child[0] : child;
-    const metadataMap = this.dataloaderMetadataService.getMetadata(params.from, childType);
+  // todo -> add return types by overloading
+  // todo -> add support to get inverse side of a relations automatically if on side is provided
+  async load<Parent>(child: Type, params: LoadParams<Parent>) {
+    const { by, from, field } = params;
+    const metadataMap = this.dataloaderMetadataService.getMetadata(from, child);
 
     if (!metadataMap) {
-      throw new Error(`cannot find metadata for ${parent.name} -> ${params.from.name} `);
+      throw new Error(`cannot find metadata for ${from.name} -> ${child.name}`);
     }
 
-    const hasMultipleRelations = metadataMap.size > 1;
-
-    if (hasMultipleRelations && !params.on) {
+    if (!field && metadataMap.size > 1) {
       throw new Error(
-        `multiple relations found between ${params.from.name} and ${childType.name}, please provide the 'on' field.`,
+        `multiple relations found between ${from.name} and ${child.name}, please provide the 'field' field.`,
       );
     }
-
-    const metadata: LoadFieldMetadata = hasMultipleRelations
-      ? metadataMap.get(params.on)
-      : metadataMap.values().next().value;
-
-    const [parentData, args = []] = params.by;
-    const dataloader = await this.getOrCreateDataloader(metadata.key, metadata, ...args);
-    const joinProperty = metadata.joinProperty(parentData);
-    return dataloader.load(joinProperty);
+    const metadata = metadataMap.get(field as string) || (metadataMap.values().next().value as RelationMetadata);
+    const [parentData, args = []] = by;
+    const [key] = jp.query(parentData, '$.' + metadata.by);
+    const dataloader = await this.getOrCreateDataloader(params, metadata, ...args);
+    return dataloader.load(key);
   }
 
-  private async getOrCreateDataloader(key: string, metadata: LoadFieldMetadata, ...params: Array<unknown>) {
-    if (this.dataloaderMappedByKey.has(key)) {
-      return this.dataloaderMappedByKey.get(key);
+  private async getOrCreateDataloader(params: LoadParams<any>, metadata: RelationMetadata, ...args: Array<unknown>) {
+    let parentDataloaderMap = this.dataloaderMappedByParentField.get(params.from);
+    if (!parentDataloaderMap) {
+      parentDataloaderMap = new Map();
+      this.dataloaderMappedByParentField.set(params.from, parentDataloaderMap);
     }
 
-    const provider = this.dataloaderMetadataService.getDataloaderHandler(key);
+    if (parentDataloaderMap?.has(params.field)) {
+      return parentDataloaderMap.get(params.field);
+    }
+
+    const dataloader = await this.createDataloader(metadata, ...args);
+    parentDataloaderMap.set(params.field, dataloader);
+    return dataloader;
+  }
+
+  private async createDataloader(metadata: RelationMetadata, ...args: Array<unknown>) {
+    const provider = this.dataloaderMetadataService.getDataloaderHandler(metadata.on);
+
+    if (!provider) {
+      throw new Error(`cannot find provider: ${metadata.on}`);
+    }
+
     const resolvedProvider = this.dataloaderMetadataService.getAlias(provider.provide);
     const repository = this.moduleRef.get(resolvedProvider || provider.provide, { strict: false });
-
     if (!repository) {
       throw new Error(`cannot find provider: ${provider.provide.name}`);
     }
 
     const fetchRecords = async (keys: Array<JoinProperty>) => {
-      return repository[provider.field](keys, ...params) as unknown[];
+      return repository[provider.field](keys, ...args) as unknown[];
     };
 
     const batchFunction = async (keys: Array<JoinProperty>) => {
@@ -76,12 +84,9 @@ export class DataloaderService {
       return DataloaderMapper.map(metadata, keys, entities);
     };
 
-    const dataloader = new Dataloader<number | string, any>(batchFunction, {
+    return new Dataloader<number | string, any>(batchFunction, {
       cache: this.cacheMapProvider?.cache,
       cacheMap: this.cacheMapProvider?.getCacheMap?.(),
     });
-
-    this.dataloaderMappedByKey.set(key, dataloader);
-    return dataloader;
   }
 }

@@ -11,9 +11,10 @@ query FindAllDocumentsByCharityId($charityId: Int!) {
             id
             name
         }
+
     }
 }
 
 {
-  "charityId": 2
+  "charityId": 1
 }

@@ -1,2 +1,2 @@
 export * from './dataloader-mapper';
-export * from './dataloader-container';
+export * from './dataloader-metadata-container';

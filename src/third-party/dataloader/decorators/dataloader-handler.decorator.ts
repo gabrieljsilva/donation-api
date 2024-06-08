@@ -1,10 +1,11 @@
-import { DataloaderContainer } from '../utils';
+import { DataloaderMetadataContainer } from '../utils';
+import { DataloaderHandlerMetadata } from 'src/third-party/dataloader/types';
 
 export function DataloaderHandler(key?: string) {
   return function (target: any, propertyKey: string) {
-    DataloaderContainer.setDataloaderHandler(key || propertyKey, {
-      provide: target.constructor,
-      field: propertyKey,
-    });
+    DataloaderMetadataContainer.setDataloaderHandler(
+      key || propertyKey,
+      new DataloaderHandlerMetadata(target.constructor, propertyKey),
+    );
   };
 }

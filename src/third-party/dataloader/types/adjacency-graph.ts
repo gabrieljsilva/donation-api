@@ -41,4 +41,12 @@ export class AdjacencyGraph<V, E> {
     }
     return newGraph;
   }
+
+  print() {
+    for (const [vertex, edges] of this.adjacencyList) {
+      for (const [neighbor, value] of edges) {
+        console.log(vertex, '->', neighbor, value);
+      }
+    }
+  }
 }

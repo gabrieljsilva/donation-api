@@ -10,9 +10,10 @@ query FindAllChatities {
             id
             type
             document
-            charity {
-                id
-            }
+        }
+        donations {
+            id
+            amount
         }
     }
 }

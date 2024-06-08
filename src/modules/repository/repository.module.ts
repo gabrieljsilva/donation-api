@@ -5,14 +5,14 @@ import {
   DocumentRepository,
   DonationRepository,
   DonorRepository,
-} from '../../domain/repositories';
+} from 'src/domain/repositories';
 import {
   AccessPrismaRepository,
   DonorPrismaRepository,
   CharityPrismaRepository,
   DonationPrismaRepository,
   DocumentPrismaRepository,
-} from '../../repositories';
+} from 'src/repositories';
 
 export class RepositoryModule {
   static register(): DynamicModule {

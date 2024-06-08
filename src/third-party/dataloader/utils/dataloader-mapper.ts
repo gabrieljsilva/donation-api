@@ -1,60 +1,85 @@
-import { JoinProperty, LoadFieldMetadata } from '../types';
+import { JoinProperty, RelationMetadata } from '../types';
+import jp from 'jsonpath';
 
 export class DataloaderMapper {
-  static map(metadata: LoadFieldMetadata, keys: Array<JoinProperty>, entities: Array<unknown>) {
-    return metadata.isArray ? this.mapOneToMany(metadata, keys, entities) : this.mapOneToOne(metadata, keys, entities);
-  }
-
-  private static mapOneToOne(metadata: LoadFieldMetadata, keys: Array<JoinProperty>, entities: Array<unknown>) {
-    const entitiesMappedByKey = new Map<JoinProperty, any>();
-
-    for (const key of keys) {
-      const entity = entities.find((entity) => {
-        const inverseKeyOrKeys = metadata.inverseJoinProperty(entity);
-
-        if (Array.isArray(inverseKeyOrKeys)) {
-          return inverseKeyOrKeys.includes(key);
-        }
-
-        return inverseKeyOrKeys === key;
-      });
-
-      entitiesMappedByKey.set(key, entity);
+  static map(metadata: RelationMetadata, keys: Array<JoinProperty>, entities: Array<unknown>) {
+    if (metadata.type === 'OneToMany' && metadata.through) {
+      return DataloaderMapper.oneToManyThrough(metadata, keys, entities);
     }
 
-    return keys.map((key) => entitiesMappedByKey.get(key));
+    if (metadata.type === 'OneToOne' && metadata.through) {
+      return DataloaderMapper.oneToOneThrough(metadata, keys, entities);
+    }
+
+    if (metadata.type === 'OneToOne') {
+      return DataloaderMapper.oneToOne(metadata, keys, entities);
+    }
+
+    return DataloaderMapper.oneToMany(metadata, keys, entities);
   }
 
-  // This method actually loads OneToMany and ManyToMany relationships
-  // Split it into two methods, one for OneToMany and one for ManyToMany
-  // Find a way to identify when keys is an array
-  // when keys is an array, call mapOneToMany
-  // and when keys is array of arrays, call mapManyToMany
-  private static mapOneToMany(metadata: LoadFieldMetadata, keys: Array<JoinProperty>, entities: Array<unknown>) {
+  private static oneToMany(metadata: RelationMetadata, keys: Array<JoinProperty>, entities: Array<unknown>) {
     const entitiesMappedByKey = new Map<JoinProperty, Array<any>>();
 
     for (const entity of entities) {
-      const keyOrKeys = metadata.inverseJoinProperty(entity);
+      const [key] = jp.query(entity, '$.' + metadata.where);
+      if (key) {
+        if (!entitiesMappedByKey.has(key)) {
+          entitiesMappedByKey.set(key, []);
+        }
+        entitiesMappedByKey.get(key).push(entity);
+      }
+    }
 
-      // Loads Many-To-Many Relationships
-      if (Array.isArray(keyOrKeys)) {
-        for (const key of keyOrKeys) {
+    return keys.map((key) => entitiesMappedByKey.get(key) || []);
+  }
+
+  private static oneToOne(metadata: RelationMetadata, keys: Array<JoinProperty>, entities: Array<unknown>) {
+    const entitiesMappedByKey = new Map<JoinProperty, any>();
+
+    for (const entity of entities) {
+      const [key] = jp.query(entity, '$.' + metadata.where);
+      if (key) {
+        entitiesMappedByKey.set(key, entity);
+      }
+    }
+
+    return keys.map((key) => entitiesMappedByKey.get(key) || null);
+  }
+
+  private static oneToManyThrough(metadata: RelationMetadata, keys: Array<JoinProperty>, entities: Array<unknown>) {
+    const entitiesMappedByKey = new Map<JoinProperty, Array<any>>();
+
+    for (const entity of entities) {
+      const [intermediateEntities] = jp.query(entity, '$.' + metadata.joinProperty);
+
+      for (const intermediateEntity of intermediateEntities) {
+        const [key] = jp.query(intermediateEntity, '$.' + metadata.where);
+        if (key) {
           if (!entitiesMappedByKey.has(key)) {
             entitiesMappedByKey.set(key, []);
           }
           entitiesMappedByKey.get(key).push(entity);
         }
-        continue;
       }
-
-      // Loads One-To-Many Relationships
-      const key = keyOrKeys;
-      if (!entitiesMappedByKey.has(key)) {
-        entitiesMappedByKey.set(key, []);
-      }
-      entitiesMappedByKey.get(key).push(entity);
     }
 
     return keys.map((key) => entitiesMappedByKey.get(key) || []);
+  }
+
+  private static oneToOneThrough(metadata: RelationMetadata, keys: Array<JoinProperty>, entities: Array<unknown>) {
+    const entitiesMappedByKey = new Map<JoinProperty, any>();
+
+    for (const entity of entities) {
+      const intermediateEntities = entity[metadata.joinProperty];
+      for (const intermediateEntity of intermediateEntities) {
+        const [key] = jp.query(intermediateEntity, '$.' + metadata.where);
+        if (key) {
+          entitiesMappedByKey.set(key, entity);
+        }
+      }
+    }
+
+    return keys.map((key) => entitiesMappedByKey.get(key) || null);
   }
 }

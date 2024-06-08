@@ -17,12 +17,6 @@ export class DocumentResolver {
 
   @ResolveField(() => Charity)
   async charity(@Parent() document: Document) {
-    const data = await this.dataloader.load([Charity], {
-      from: Document,
-      by: [document],
-      on: 'LOAD_CHARITIES_BY_DOCUMENTS_IDS',
-    });
-
-    return data;
+    return this.dataloader.load(Charity, { from: Document, field: 'charity', by: [document] });
   }
 }

@@ -1,29 +1,29 @@
 import { Injectable, Type } from '@nestjs/common';
-import { AdjacencyGraph, DataloaderKey, MetadataMappedByKey } from '../types';
-import { DataloaderHandler } from '../utils';
+import { AdjacencyGraph, DataloaderKey, RelationMetadata } from '../types';
+import { DataloaderHandlerMetadata } from '../utils';
 
 @Injectable()
 export class DataloaderMetadataService {
-  private readonly relations: AdjacencyGraph<Type, MetadataMappedByKey>;
   private readonly aliases: Map<Type, Type>;
-  private readonly dataloaderHandlersMappedByKey: Map<DataloaderKey, DataloaderHandler>;
+  private readonly dataloaderHandlersMappedByKey: Map<DataloaderKey, DataloaderHandlerMetadata>;
+  private readonly relations: AdjacencyGraph<Type, Map<string, RelationMetadata>>;
 
   constructor(
-    relations: AdjacencyGraph<Type, MetadataMappedByKey>,
+    relations: AdjacencyGraph<Type, Map<string, RelationMetadata>>,
     aliases: Map<Type, Type>,
-    dataloaderHandlersMappedByKey: Map<DataloaderKey, DataloaderHandler>,
+    dataloaderHandlersMappedByKey: Map<DataloaderKey, DataloaderHandlerMetadata>,
   ) {
     this.relations = relations;
     this.aliases = aliases;
     this.dataloaderHandlersMappedByKey = dataloaderHandlersMappedByKey;
   }
 
-  getDataloaderHandler(key: DataloaderKey) {
-    return this.dataloaderHandlersMappedByKey.get(key);
-  }
-
   getMetadata(parent: Type, child: Type) {
     return this.relations.getEdges(parent)?.get(child);
+  }
+
+  getDataloaderHandler(key: DataloaderKey) {
+    return this.dataloaderHandlersMappedByKey.get(key);
   }
 
   getAlias(type: Type) {

@@ -22,13 +22,13 @@ export class DonationResolver {
     return this.donationService.donate(donateDto, access);
   }
 
-  @ResolveField(() => Donor)
+  @ResolveField(() => Donor, { nullable: true })
   async donor(@Parent() donation: Donation) {
-    return this.dataloader.load(Donor, { from: Donation, by: [donation] });
+    return this.dataloader.load(Donor, { from: Donation, by: [donation], field: 'donor' });
   }
 
-  @ResolveField(() => Charity)
+  @ResolveField(() => Charity, { nullable: true })
   async charity(@Parent() donation: Donation) {
-    return this.dataloader.load(Charity, { from: Donation, by: [donation] });
+    return this.dataloader.load(Charity, { from: Donation, by: [donation], field: 'charity' });
   }
 }

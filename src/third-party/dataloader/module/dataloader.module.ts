@@ -1,8 +1,8 @@
 import { DynamicModule, Provider } from '@nestjs/common';
 import { CacheMap } from 'dataloader';
 import { DataloaderService } from './dataloader.service';
-import { DataloaderContainer } from '../utils';
 import { DataloaderMetadataService } from './dataloader-metadata.service';
+import { DataloaderMetadataContainer } from 'src/third-party/dataloader/utils';
 
 interface DataloaderModuleOptions {
   global?: boolean;
@@ -19,9 +19,9 @@ export class DataloaderModule {
   static register(options?: DataloaderModuleOptions): DynamicModule {
     const { global = true, getCacheMap, cache = false } = options || {};
 
-    const relations = DataloaderContainer.resolveRelations();
-    const aliases = DataloaderContainer.resolveAliases();
-    const dataloaderHandlers = DataloaderContainer.getDataloaderHandlers();
+    const aliases = DataloaderMetadataContainer.resolveAliases();
+    const dataloaderHandlers = DataloaderMetadataContainer.getDataloaderHandlers();
+    const relations = DataloaderMetadataContainer.resolveRelations();
 
     const providers: Provider[] = [
       {

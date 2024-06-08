@@ -5,6 +5,7 @@ import { PrismaService } from '../infra/database';
 import { DataloaderHandler, AliasFor } from '../third-party/dataloader/decorators';
 import { CreateCharityDto } from '../modules/charity/dto';
 import { DOCUMENT_TYPE } from '../domain/enum';
+import { LOAD_CHARITIES_BY_DOCUMENTS_IDS, LOAD_CHARITIES_BY_IDS } from 'src/constants';
 
 @Injectable()
 @AliasFor(() => CharityRepository)
@@ -59,7 +60,7 @@ export class CharityPrismaRepository implements CharityRepository {
     return this.prisma.charity.update({ where: { id }, data: { name } });
   }
 
-  @DataloaderHandler('LOAD_CHARITY_BY_ID')
+  @DataloaderHandler(LOAD_CHARITIES_BY_IDS)
   async findByIds(ids: Array<number>): Promise<Array<Charity>> {
     return this.prisma.charity.findMany({
       where: {
@@ -84,7 +85,7 @@ export class CharityPrismaRepository implements CharityRepository {
     `;
   }
 
-  @DataloaderHandler('LOAD_CHARITIES_BY_DOCUMENTS_IDS')
+  @DataloaderHandler(LOAD_CHARITIES_BY_DOCUMENTS_IDS)
   async findCharitiesByDocumentsIds(documentsIds: Array<number>) {
     return this.prisma.charity.findMany({
       where: {

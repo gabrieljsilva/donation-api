@@ -1,9 +1,9 @@
 import { Resolver, Query, Mutation, Args, ResolveField, Parent } from '@nestjs/graphql';
-import { Access, Donor } from '../../entities';
+import { Access, Donor } from 'src/entities';
 import { CreateAccessDto, MakeLoginDto } from './dto';
 import { AccessControlService } from './access-control.service';
-import { CurrentAccess, Public } from '../../decorators';
-import { DataloaderService } from '../../third-party/dataloader/module';
+import { CurrentAccess, Public } from 'src/decorators';
+import { DataloaderService } from 'src/third-party/dataloader/module';
 
 @Resolver(Access)
 export class AccessControlResolver {
@@ -36,6 +36,6 @@ export class AccessControlResolver {
 
   @ResolveField(() => Donor, { nullable: true })
   async donor(@Parent() access: Access) {
-    return this.dataloader.load(Donor, { from: Access, by: [access] });
+    return this.dataloader.load(Donor, { from: Access, by: [access], field: 'donor' });
   }
 }

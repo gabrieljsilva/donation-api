@@ -1,11 +1,50 @@
 import { Type } from '@nestjs/common';
-import { LoadFieldMetadata } from './load-field-metadata';
+
+export enum RelationType {
+  OneToOne = 'OneToOne',
+  OneToMany = 'OneToMany',
+}
 
 export type JoinProperty = string | number;
 export type DataloaderKey = string;
-export type JoinPropertyFn<Parent> = (parent: Parent) => JoinProperty;
-export type InverseJoinPropertyFn<Child> = (child: Child) => JoinProperty | Array<JoinProperty>;
-export type DataloaderChild<T = unknown> = Type<T> | [Type<T>];
-export type DataloaderChildFN<T = unknown> = () => DataloaderChild<T>;
 export type AliasForReturnFn = () => Type | Function;
-export type MetadataMappedByKey = Map<DataloaderKey, LoadFieldMetadata>;
+export type RelationField = string;
+export type RelationNodeFn<Of = unknown> = () => Type<Of>;
+
+export class RelationMetadata {
+  type: RelationType;
+  by: string;
+  where: string;
+  through?: Type;
+  joinProperty?: string;
+  on: string;
+
+  constructor(metadata: RelationMetadata) {
+    this.type = metadata.type;
+    this.by = metadata.by;
+    this.where = metadata.where;
+    this.through = metadata.through;
+    this.joinProperty = metadata.joinProperty;
+    this.on = metadata.on;
+  }
+}
+
+export class LoadThroughMetadata {
+  field: string;
+  joinProperty: string;
+
+  constructor(metadata: LoadThroughMetadata) {
+    this.field = metadata.field;
+    this.joinProperty = metadata.joinProperty;
+  }
+}
+
+export class DataloaderHandlerMetadata {
+  provide: Type;
+  field: string;
+
+  constructor(provider: Type, field: string) {
+    this.provide = provider;
+    this.field = field;
+  }
+}

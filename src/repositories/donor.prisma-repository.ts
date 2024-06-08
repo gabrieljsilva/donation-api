@@ -3,6 +3,7 @@ import { DonorRepository } from '../domain/repositories';
 import { Donor } from '../entities';
 import { PrismaService } from '../infra/database';
 import { DataloaderHandler, AliasFor } from '../third-party/dataloader/decorators';
+import { LOAD_DONORS_BY_ACCESSES_IDS, LOAD_DONORS_BY_IDS } from 'src/constants';
 
 @Injectable()
 @AliasFor(() => DonorRepository)
@@ -16,7 +17,7 @@ export class DonorPrismaRepository extends DonorRepository {
     return donors as Array<Donor>;
   }
 
-  @DataloaderHandler('LOAD_DONOR_BY_ACCESS_ID')
+  @DataloaderHandler(LOAD_DONORS_BY_ACCESSES_IDS)
   async findByAccessIds(accessIds: Array<number>): Promise<Array<Donor>> {
     return this.prisma.donor.findMany({
       where: {
@@ -53,7 +54,7 @@ export class DonorPrismaRepository extends DonorRepository {
     });
   }
 
-  @DataloaderHandler('LOAD_DONOR_BY_ID')
+  @DataloaderHandler(LOAD_DONORS_BY_IDS)
   async findByIds(ids: number[]): Promise<Array<Donor>> {
     return this.prisma.donor.findMany({
       where: {

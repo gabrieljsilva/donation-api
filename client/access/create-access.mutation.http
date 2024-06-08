@@ -3,6 +3,12 @@ GRAPHQL {{graphql}}
 mutation CreateAccess($input: CreateAccessDto!) {
     createAccess(input: $input){
         id
+        email
+        donor {
+            id
+            name
+            accessId
+        }
     }
 }
 

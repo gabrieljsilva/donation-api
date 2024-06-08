@@ -6,6 +6,11 @@ mutation CreateCharity($input: CreateCharityDto!) {
     createCharity(createCharityDto: $input){
         id
         name
+        documents {
+            id
+            document
+            type
+        }
     }
 }
 

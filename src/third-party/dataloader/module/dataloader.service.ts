@@ -7,6 +7,7 @@ import { JoinProperty, RelationMetadata } from '../types';
 import { DataloaderMapper } from '../utils';
 import { CacheMapProvider } from './dataloader.module';
 import { DataloaderMetadataService } from './dataloader-metadata.service';
+import { TestService } from 'src/modules/test/test.service';
 
 interface LoadParams<Parent> {
   from: Type;
@@ -27,6 +28,14 @@ export class DataloaderService {
   // todo -> add return types by overloading
   // todo -> add support to get inverse side of a relations automatically if on side is provided
   async load<Parent>(child: Type, params: LoadParams<Parent>) {
+    try {
+      console.log('=========================');
+      console.log(this.moduleRef.get(TestService, { strict: true }));
+      console.log('=========================');
+    } catch (e) {
+      console.log(e);
+    }
+
     const { by, from, field } = params;
     const metadataMap = this.dataloaderMetadataService.getMetadata(from, child);
 

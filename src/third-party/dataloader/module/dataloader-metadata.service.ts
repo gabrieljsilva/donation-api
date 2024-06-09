@@ -1,6 +1,5 @@
 import { Injectable, Type } from '@nestjs/common';
-import { AdjacencyGraph, DataloaderKey, RelationMetadata } from '../types';
-import { DataloaderHandlerMetadata } from '../utils';
+import { AdjacencyGraph, DataloaderHandlerMetadata, DataloaderKey, RelationMetadata } from '../types';
 
 @Injectable()
 export class DataloaderMetadataService {

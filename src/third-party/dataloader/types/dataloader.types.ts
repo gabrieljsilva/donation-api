@@ -28,23 +28,3 @@ export class RelationMetadata {
     this.on = metadata.on;
   }
 }
-
-export class LoadThroughMetadata {
-  field: string;
-  joinProperty: string;
-
-  constructor(metadata: LoadThroughMetadata) {
-    this.field = metadata.field;
-    this.joinProperty = metadata.joinProperty;
-  }
-}
-
-export class DataloaderHandlerMetadata {
-  provide: Type;
-  field: string;
-
-  constructor(provider: Type, field: string) {
-    this.provide = provider;
-    this.field = field;
-  }
-}

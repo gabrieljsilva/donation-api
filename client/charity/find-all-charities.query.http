@@ -11,12 +11,6 @@ query FindAllCharities {
             type
             document
         }
-        donations {
-            id
-            amount
-            donorId
-            charityId
-        }
     }
 }
 

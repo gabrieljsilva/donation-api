@@ -70,7 +70,19 @@ export class DataloaderService {
     }
 
     const resolvedProvider = this.dataloaderMetadataService.getAlias(provider.provide);
+
     const repository = this.moduleRef.get(resolvedProvider || provider.provide, { strict: false });
+
+    /**
+     * PS: using strict: false allows us to load all providers from the module globally or not
+     * using strict: true will only load providers from the current module
+     * however, it's not possible to use providers imported from other modules
+     * using "import" statement, but it's possible to use providers from other
+     * modules using "providers" option in the module registration
+     *
+     * more tests should be done to check the best approach
+     */
+
     if (!repository) {
       throw new Error(`cannot find provider: ${provider.provide.name}`);
     }

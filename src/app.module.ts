@@ -17,6 +17,8 @@ import { CharityModule } from './modules/charity/charity.module';
 import { DonationModule } from './modules/donation/donation.module';
 import { formatError } from './utils/graphql/format-graphql-errors';
 import { DocumentModule } from 'src/modules/document/document.module';
+import { TestModule } from 'src/modules/test/test.module';
+import { TestService } from 'src/modules/test/test.service';
 
 @Module({
   imports: [

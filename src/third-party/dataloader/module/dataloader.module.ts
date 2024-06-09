@@ -8,6 +8,13 @@ interface DataloaderModuleOptions {
   global?: boolean;
   cache?: boolean;
   getCacheMap?: () => CacheMap<any, any>;
+  forFeature?: Array<Provider>;
+
+  /**
+   * PS: This option allows you to add providers to the dataloader module context;
+   * However, it's not possible to use providers imported from other modules
+   * using "import" statement;
+   */
 }
 
 export class CacheMapProvider {
@@ -17,7 +24,7 @@ export class CacheMapProvider {
 
 export class DataloaderModule {
   static register(options?: DataloaderModuleOptions): DynamicModule {
-    const { global = true, getCacheMap, cache = false } = options || {};
+    const { global = true, getCacheMap, cache = false, forFeature = [] } = options || {};
 
     const aliases = DataloaderMetadataContainer.resolveAliases();
     const dataloaderHandlers = DataloaderMetadataContainer.getDataloaderHandlers();
@@ -36,6 +43,7 @@ export class DataloaderModule {
         provide: DataloaderMetadataService,
         useValue: new DataloaderMetadataService(relations, aliases, dataloaderHandlers),
       },
+      ...forFeature,
     ];
 
     return {

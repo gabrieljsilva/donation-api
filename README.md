@@ -53,13 +53,6 @@ It provides a way to create a dataloader using decorators, like relations.
 - [ ] Local dataloader handlers resolution;
 - [ ] @CacheStrategy decorator to set up cache in specific resolver fields;
 
-Currently, the Dataloader module only loads the DataloaderHandlers globally, which is not ideal.
-A way to load the DataloaderHandlers locally should be considered.
-
-Proposal: In the register method, add a parameter that receives a list of modules to be imported.
-These modules should export all the providers that have methods decorated with @DataloaderHandler.
-The module should be able to resolve these providers and add them to the DataloaderService.
-
 ### Decorated Factory
 This library aims to provide a way to create instances for testing scenarios
 

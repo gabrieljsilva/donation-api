@@ -4,10 +4,9 @@ import { INestApplication } from '@nestjs/common';
 import { CreateAccountAndLoginRoutine } from 'test/routines/access';
 import { beforeAll } from 'vitest';
 import { setupApp } from 'test/setup/setup.app';
+import { gql } from 'test/constants';
 
-const gql = '/graphql';
-
-describe('Charity e2e tests', () => {
+describe('Create charity e2e tests', () => {
   let app: INestApplication;
   let token: string;
 

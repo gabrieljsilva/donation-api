@@ -2,20 +2,14 @@ import request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 
-import { AppModule } from 'src/app.module';
+import { gql } from 'test/constants';
+import { setupApp } from 'test/setup/setup.app';
 
-const gql = '/graphql';
-
-describe('Access e2e tests', () => {
+describe('Create access e2e tests', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = module.createNestApplication();
-    await app.init();
+    app = await setupApp();
   });
 
   it('should create access successfully', async () => {

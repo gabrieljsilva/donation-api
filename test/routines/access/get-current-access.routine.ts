@@ -9,6 +9,8 @@ export class GetCurrentAccessRoutine extends Routine {
           email
           donor {
             id
+            name
+            birthDate
           }
       }
     }

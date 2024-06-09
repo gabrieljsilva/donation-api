@@ -6,6 +6,8 @@ query FindAllDonations {
     findAllDonations {
         id
         amount
+        charityId
+        donorId
         charity {
             id
             name

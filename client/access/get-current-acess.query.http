@@ -13,6 +13,5 @@ query GetCurrentAccess {
                 id
             }
         }
-
     }
 }

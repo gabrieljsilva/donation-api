@@ -6,7 +6,7 @@ import { CreateAccountAndLoginRoutine, GetCurrentAccessRoutine } from 'test/rout
 import { CreateCharityRoutine } from 'test/routines/charity';
 import { gql } from 'test/constants';
 
-describe('Donations e2e tests', () => {
+describe('Create donation e2e tests', () => {
   let app: INestApplication;
   let token: string;
 
